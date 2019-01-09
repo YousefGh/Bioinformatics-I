@@ -219,6 +219,19 @@ def score(motifs):
 
 
 def greedyMotifSearch(dna, k, t):
+    '''
+    Finds a pattern that is appearing in all sequences with minimum number of mismatches
+    so called motifs.
+    Greedy because it tries to bring up a pattern that is similar to the first k-mer
+    in the first sequence of DNA at its first try then by greed takes its first iteration
+    as its probability of finding the best motif where the probabilities are skewed (biased) towards its first
+    occurrences without accounting for all possibilities (We accept this to boost speed)
+
+    :param dna: list of dna sequences
+    :param k: length of the k-mer
+    :param t: number of sequences
+    :return: motifs
+    '''
     bestScore = float('inf')
     bestMotifs = []
 

@@ -1,6 +1,6 @@
 import cProfile
 
-# calculates descriptively the time of function execution
+# calculates descriptively the time of a function execution
 # add @do_cprofile above the function
 def do_cprofile(func):
     def profiled_func(*args, **kwargs):

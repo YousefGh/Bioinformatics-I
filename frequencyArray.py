@@ -37,7 +37,6 @@ def patternToNumber(pattern):
     return result
 
 
-
 def numberToPattern(num, k):
     '''
     the inverse of patternToNumber function. k = resulting string length
