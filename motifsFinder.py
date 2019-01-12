@@ -1,3 +1,5 @@
+import random
+
 def hammingDistance(pattern_1, pattern_2):
     '''
     hamming distance is the difference between two patterns based on letters
@@ -146,11 +148,13 @@ def profileMostProbable(genome, k, profile):
     '''
     Takes a profile matrix to give the most probable k-mer to be
     generated based on the genome collection
+
     :param genome: list of DNA sequences
     :param k: length of the pattern k-mer
     :param profile: nucleotide probability matrix
     :return: Most probable k-mer
     '''
+
     nucleotides = {'A': 0, 'C': 1, 'G': 2, 'T': 3}
     prob = -1
     mostProbPattern = 'None'
@@ -159,6 +163,7 @@ def profileMostProbable(genome, k, profile):
         j = 0
         newProb = 1
         for nuc in pattern:
+            # print(j, nucleotides[nuc])
             newProb *= profile[j][nucleotides[nuc]]
             j += 1
         if newProb > prob:
@@ -251,29 +256,41 @@ def greedyMotifSearch(dna, k, t):
     return bestMotifs
 
 
-if __name__ == '__main__':
-    fileLinesArray = open('dataset_159_3.txt', 'r').read().split('\n')
-    # #
-    k = int(fileLinesArray[0])
-    # dna = fileLinesArray[1].split(' ')
+def randomizedMotifSearch(dna, k, t):
+    '''
+    Finds the most occurring pattern in a set of DNA sequences with the least number of mismatches
+    (motifs). The function starts from a random guess of motifs then fixes itself
+
+    :param dna: list of sequences
+    :param k: length of the motif (k-mer)
+    :param t: number of sequences
+    :return: array of best motifs
+    '''
+    import random
+
+    # Generate random motifs (k-mers) from each string
+    bestMotifs = []
+    for sequence in dna:
+        randomIdx = random.randint(0, len(dna[0]) - k)
+        bestMotifs.append(sequence[randomIdx: randomIdx + k])
+
+    while True:
+        currentProfile = profile(bestMotifs)
+        motifs = []
+        for sequence in dna:
+            motifs.append(profileMostProbable(sequence, k, currentProfile))
+
+        if score(bestMotifs) > score(motifs):
+            bestMotifs = motifs
+        else:
+            return bestMotifs
 
 
-    dna = []
-    for i in range(1, len(fileLinesArray)):
-        dna.append(fileLinesArray[i])
+def randomizedMotifSearchRepeat(dna, k, t, iterations):
+    bestMotifs = randomizedMotifSearch(dna, k, t)
 
-
-    # genome = fileLinesArray[0]
-    # k = int(fileLinesArray[1])
-    #
-    # profileMtrix = []
-    # for i in range(2, len(fileLinesArray) ):
-    #     row = fileLinesArray[i].split(' ')
-    #     print(row)
-    #     profileMtrix.append([float(row[j]) for j in range(k)])
-    # # print(profileMtrix)
-    #
-    #
-    # print(profileMostProbable(genome, k, profileMtrix))
-
-    print(medianString(dna, k))
+    for i in range(iterations):
+        motifs = randomizedMotifSearch(dna, k, t)
+        if score(bestMotifs) > score(motifs):
+            bestMotifs = motifs
+    return bestMotifs
